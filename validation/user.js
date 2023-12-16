@@ -2,7 +2,7 @@ const { body } = require("express-validator");
 
 const User = require("../models/user");
 
-exports.signupValidationRules = () => {
+const signupValidationRules = () => {
   return [
     body("username").trim().not().isEmpty().isLength({ min: 2 }),
     body("email")
@@ -20,3 +20,5 @@ exports.signupValidationRules = () => {
     body("phone_number").trim().isMobilePhone("vi-VN"),
   ];
 };
+
+module.exports = signupValidationRules;

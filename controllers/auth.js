@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
+const message = require("../messages/messages");
+
 exports.signup = async (req, res, next) => {
   const username = req.body.username;
   const email = req.body.email;
@@ -30,6 +32,54 @@ exports.signup = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+    next(err);
+  }
+};
+
+exports.login = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  let loadedUser;
+
+  try {
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      const error = new Error(message.errorMessages.userNotFoundWithEmail);
+      error.statusCode = 401;
+      throw error;
+    }
+
+    loadedUser = user;
+    const isEqual = await bcrypt.compare(password, user.password);
+
+    if (!isEqual) {
+      const error = new Error(message.errorMessages.wrongPassword);
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const token = jwt.sign(
+      {
+        email: loadedUser.email,
+        userId: loadedUser._id.toString(),
+      },
+      "dummy",
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    res.status(200).json({
+      token: token,
+      userId: loadedUser._id.toString(),
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+
     next(err);
   }
 };
