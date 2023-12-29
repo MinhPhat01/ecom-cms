@@ -1,6 +1,6 @@
 const { body } = require("express-validator");
 
-const createPostValidationRules = () => {
+exports.createPost = () => {
   return [
     body("title").trim().not().isEmpty(),
     body("banner").trim().not().isEmpty(),
@@ -8,4 +8,10 @@ const createPostValidationRules = () => {
   ];
 };
 
-module.exports = createPostValidationRules;
+exports.updatePost = () => {
+  return [
+    body("title").trim().not().isEmpty(),
+    body("banner").trim().not().isEmpty(),
+    body("title").trim().not().isEmpty(),
+  ];
+};
